@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Client Dashboard</title>
+    <!-- Include your CSS and JavaScript files -->
+</head>
+<body>
+    <header>
+        <% if(clientId) { %>
+            <p style="color: rgb(50, 200, 45)"> client id is <%= clientId %></p>
+            <% } %>
+    
+            <% if(name) { %>
+                <p style="color: rgb(50, 200, 45)"> name  is <%= name %></p>
+                <% } %>  
+        <!-- Add header content -->
+    </header>
+    <main>
+        <section id="previousTickets">
+            <!-- Display the status of previous tickets here -->
+        </section>
+        <section id="newTicket">
+            <h2>Generate New Ticket</h2>
+            <form id="newTicketForm">
+                <label for="ticketTitle">Ticket Title:</label>
+                <input type="text" id="ticketTitle" name="ticketTitle" required>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <!-- Add footer content -->
+    </footer>
+    <script src="dashboard.js"></script>
+</body>
+</html>
