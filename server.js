@@ -8,6 +8,7 @@ const app = express();
 const db = require("./models/db");
 const ClientModel = require("./models/Client");
 const { generateKey } = require("crypto");
+const TicketsModel = require("./models/Tickets");
 
 // Static folder for serving HTML, CSS, JS, and other assets
 app.use(express.static(path.join(__dirname, 'public')));
@@ -101,29 +102,60 @@ app.post("/signup", async function (req, res) {
     
 });
 
+app.get("/clientDashboard", async function (req, res) {
+    if (!req.session.isLoggedIn) {
+        res.redirect("/login");
+    } else {
+        try {
+            const clientId = req.session.clientId;
+            const name = req.session.name;
+            // Fetch the user's previous tickets from the database
+            const previousTickets = await TicketsModel.find({ clientId: req.session.clientId });
+
+            // Render the clientDashboard template and pass the previousTickets data
+            res.render("clientDashboard", { name, clientId, previousTickets });
+        } catch (err) {
+            console.error("Error:", err);
+            res.status(500).send("An error occurred");
+        }
+    }
+});
 
 
-app.get("/clientDashboard", function (req, res) {
+app.post("/newTicketForm",async function(req,res){
     if (!req.session.isLoggedIn) {
       res.redirect("/login");
     } else 
     {
-    const clientId = req.session.clientId;
-    const name = req.session.name;
-    res.render("clientDashboard", { name:name ,clientId:clientId });  
+    try{
+        const ticketId = generateTicketId();        
+        const clientId = req.session.clientId;
+        const name = req.session.name;
+        const email = req.session.email;
+        const { categories, problemDescription} = req.body;
+        const status = "Pending";
+        const solution = "";
+        console.log(ticketId,clientId,name,email,categories, problemDescription,status,solution)
+        const newTicket = await TicketsModel.create({ ticketId,clientId,name,email,categories, problemDescription,status,solution });
+        await newTicket.save();
+        // Set the newTicketSubmitted flag in the session
+        req.session.newTicketSubmitted = true;
+        res.redirect("/clientDashboard");
+    }
+    catch (err){
+        res.status(500).send("An error occurred");
+    }
   }
+})  
+//Logout route to clear session and redirect to login page
+app.get("/logout", function (req, res) {
+    req.session.destroy(function (err) {
+      if (err) {
+        console.log(err);
+      }
+      res.redirect("/login");
+    });
   });
-  
-
-// Logout route to clear session and redirect to login page
-// app.get("/logout", function (req, res) {
-//     req.session.destroy(function (err) {
-//       if (err) {
-//         console.log(err);
-//       }
-//       res.redirect("/login");
-//     });
-//   });
 
 db.init()
     .then(function () {
@@ -144,4 +176,9 @@ db.init()
 function generateClientId(name) {
     const randomNumber = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
     return `@${name}${randomNumber}`;
+}
+
+function generateTicketId() {
+    const randomNumber = Math.floor(Math.random() * (99999999999999 - 10000000000000 + 1)) + 10000000000000;
+    return randomNumber;
 }

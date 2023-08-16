@@ -1,36 +1,67 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Client Dashboard</title>
-    <!-- Include your CSS and JavaScript files -->
-</head>
-<body>
-    <header>
-        <% if(clientId) { %>
-            <p style="color: rgb(50, 200, 45)"> client id is <%= clientId %></p>
+<%- include('components/clientHeader', { pageTitle: 'Client Dashboard' }) %>
+
+<div style="width: 100%; display: flex;">
+    <div class="status-section" style="flex: 1; padding: 20px;">
+        <h2>Status of Previous Tickets</h2>
+        <ul>
+            <% if (previousTickets.length > 0) { %>
+                <% previousTickets.forEach(ticket => { %>
+                    <li>
+                        <p>Ticket ID: <%= ticket.ticketId %></p>
+                        <p>Category: <%= ticket.categories %></p>
+                        <p>Status: <%= ticket.status %></p>
+                        <p>Solution: <%= ticket.solution || 'Not available' %></p>
+                    </li>
+                <% }); %>
+            <% } else { %>
+                <p>No previous tickets.</p>
             <% } %>
+        </ul>
+    </div>
+    <div style="flex: 1; padding: 20px; "> 
+    <H3>Generate New Ticket:</H3>
+       <img src="gen.png" alt="Ticket Generation Image" style="max-width: 100%;">
+       <form id="newTicketForm" action="/newTicketForm" method="post">
+        <label for="categories">Problem Category:</label>
+        <select class="form-select" name="categories" required>
+            <option value="" disabled selected>Select a category</option>
+            <option value="one">One</option>
+            <option value="two">Two</option>
+            <option value="three">Three</option>
+        </select>
+        
+        <label for="problemDescription">Problem Description:</label>
+        <textarea class="form-control" name="problemDescription" rows="4" required></textarea>
+        
+        <button type="submit" class="submit-button">Submit</button>
+    </form>
     
-            <% if(name) { %>
-                <p style="color: rgb(50, 200, 45)"> name  is <%= name %></p>
-                <% } %>  
-        <!-- Add header content -->
-    </header>
-    <main>
-        <section id="previousTickets">
-            <!-- Display the status of previous tickets here -->
-        </section>
-        <section id="newTicket">
-            <h2>Generate New Ticket</h2>
-            <form id="newTicketForm">
-                <label for="ticketTitle">Ticket Title:</label>
-                <input type="text" id="ticketTitle" name="ticketTitle" required>
-                <button type="submit">Submit</button>
-            </form>
-        </section>
-    </main>
-    <footer>
-        <!-- Add footer content -->
-    </footer>
-    <script src="dashboard.js"></script>
-</body>
-</html>
+    </div>
+</div>
+
+
+<!-- <div class="main-content">
+    <div class="status-section">
+        <!-- Status of Previous Tickets Content -->
+    <!-- </div>
+    
+    <div class="new-ticket-section">
+        <h3>Generate New Ticket:</h3>
+        <form id="newTicketForm" action="/newTicketForm" method="post">
+            <label for="categories">Problem Category:</label>
+            <select class="form-select" name="categories" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+            </select>
+            
+            <label for="problemDescription">Problem Description:</label>
+            <textarea class="form-control" name="problemDescription" rows="4" required></textarea>
+            
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+    </div>
+</div> -->
+
+<%- include('components/footer', { currentYear: new Date().getFullYear() }) %>
