@@ -1,0 +1,46 @@
+<%- include('components/clientHeader', { pageTitle: 'Client Dashboard' }) %>
+
+<div style="width: 100%; display: flex;">
+    <div class="status-section" style="flex: 1; padding: 20px;">
+        <div class="ticket-list">
+            <h2>Ticket List</h2>
+            <ul>
+                <% for (const ticket of tickets) { %>
+                    <li>
+                        <p>Ticket ID: <%= ticket.ticketId %></p>
+                        <p>Name: <%= ticket.name %></p>
+                        <p>Status: <%= ticket.status %></p>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+        
+    </div>
+    <div style="flex: 1; padding: 20px; "> 
+        <div class="ticket-edit-section">
+            <h2>Edit and Update Ticket</h2>
+            <img src="solver.png" alt="Ticket Generation Image" style="max-width: 100%;">
+            <form action="/updateTicket" method="post">
+                <label for="ticketId">Select Ticket by ID:</label>
+                <select name="ticketId">
+                    <% for (const ticket of tickets) { %>
+                        <option value="<%= ticket.ticketId %>"><%= ticket.ticketId %></option>
+                    <% } %>
+                </select>
+                <label for="newStatus">New Status:</label>
+                <select name="newStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Solved">Solved</option>
+                    <!-- Add more options if needed -->
+                </select>
+                <textarea name="solution" rows="4" cols="50" placeholder="Add solution"></textarea>
+                <button type="submit">Update Ticket</button>
+            </form>
+        </div>
+    
+    
+    </div>
+</div>
+
+<%- include('components/footer', { currentYear: new Date().getFullYear() }) %>
+

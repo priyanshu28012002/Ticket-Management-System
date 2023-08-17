@@ -19,7 +19,7 @@
         </ul>
     </div>
     <div style="flex: 1; padding: 20px; "> 
-    <H3>Generate New Ticket:</H3>
+    <H2>Generate New Ticket:</H2>
        <img src="gen.png" alt="Ticket Generation Image" style="max-width: 100%;">
        <form id="newTicketForm" action="/newTicketForm" method="post">
         <label for="categories">Problem Category:</label>
@@ -38,30 +38,5 @@
     
     </div>
 </div>
-
-
-<!-- <div class="main-content">
-    <div class="status-section">
-        <!-- Status of Previous Tickets Content -->
-    <!-- </div>
-    
-    <div class="new-ticket-section">
-        <h3>Generate New Ticket:</h3>
-        <form id="newTicketForm" action="/newTicketForm" method="post">
-            <label for="categories">Problem Category:</label>
-            <select class="form-select" name="categories" required>
-                <option value="" disabled selected>Select a category</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
-            
-            <label for="problemDescription">Problem Description:</label>
-            <textarea class="form-control" name="problemDescription" rows="4" required></textarea>
-            
-            <button type="submit" class="submit-button">Submit</button>
-        </form>
-    </div>
-</div> -->
 
 <%- include('components/footer', { currentYear: new Date().getFullYear() }) %>
