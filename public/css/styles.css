@@ -1,8 +1,10 @@
 .navbar-gap {
-          margin-bottom: 20px; /* Add margin at the bottom */
-      }
-      /* Add this CSS to your stylesheet */
-        /* Add this CSS to your stylesheet */
+    margin-bottom: 20px;
+    /* Add margin at the bottom */
+}
+
+/* Add this CSS to your stylesheet */
+/* Add this CSS to your stylesheet */
 /* Add this CSS to your stylesheet */
 .user-profile {
     display: flex;
@@ -23,20 +25,18 @@
 
 .navbar1 {
     display: flex;
-    justify-content: space-between; /* Pushes the navbar content to the edges */
+    justify-content: space-between;
+    /* Pushes the navbar content to the edges */
     padding: 10px;
 }
-.navbar-brand{
-    
 
- 
+.navbar-brand {}
 
-}
 .img {
     width: 200px;
     height: 300px;
     object-fit: fill;
-  }
+}
 
 
 .logout-button {
@@ -47,4 +47,8 @@
     padding: 10px 20px;
     font-size: 14px;
     cursor: pointer;
-  }  
+}
+
+.chat-section{
+    background-color: aqua;
+}

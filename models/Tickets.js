@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 const TicketsSchema = new mongoose.Schema({
-  
-  clientId:String,
-  ticketId:String,
-  name:String,
+
+  employeeId: String,
+  ticketId: String,
+  name: String,
   email: String,
-  categories: String,
+  department: String,
   problemDescription: String,
-  status:String,
-  solution:String,
+  status: String,
+  solution: String,
   //clientId,name,email,categories, problemDescription
 });
 

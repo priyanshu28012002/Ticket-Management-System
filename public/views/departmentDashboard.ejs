@@ -1,0 +1,72 @@
+<%- include('components/clientHeader', { pageTitle: 'employeeDashboard' }) %>
+<h1>Department HelpDesk Dashboard</h1>
+<h2>Name of the Employee is <%= name %></h2>
+<h2>Employee ID is <%= employeeId%></h2>
+<h2>Department is <%= department%></h2>
+    <div>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid justify-content-start">
+                <a href="/employeeDashboard" class="btn btn-outline-success me-2" role="button">My Tickets</a>
+                <a href="/departmentDashboard" class="btn btn-sm btn-outline-secondary" role="button">Department Tickets</a>
+            </div>
+        </nav>
+    </div>
+    <div style="width: 100%; display: flex;">
+        
+        <div class="status-section" style="flex: 1; padding: 20px;">
+            <h2>Status of My Previous Tickets</h2>
+            <ul>
+                <% if (previousTickets.length> 0) { %>
+                    <% previousTickets.forEach(ticket=> { %>
+                        <li>
+                            <p>Ticket ID: <%= ticket.ticketId %>
+                            </p>
+
+                            <p>Problem Description: <%= ticket.problemDescription %></p>
+
+                            <p>Department: <%= ticket.department %>
+                            </p>
+                            <p>Status: <%= ticket.status %>
+                            </p>
+                            <p>Solution: <%= ticket.solution || 'Not available' %>
+                            </p>
+                        </li>
+                        <% }); %>
+                            <% } else { %>
+                                <p>No previous tickets.</p>
+                                <% } %>
+            </ul>
+        </div>   
+            
+    <!--                           Solve the ticket 
+     -->
+     <div style="flex: 1; padding: 20px; ">
+        <div class="ticket-edit-section">
+            <h2>Edit and Update Ticket</h2>
+            <img src="solver.png" alt="Ticket Generation Image" style="max-width: 100%;">
+            <form action="/updateTicket" method="post">
+                <label for="ticketId">Select Ticket by ID:</label>
+                <select name="ticketId">
+                    <% for (const tickets of previousTickets) { %>
+                        <option value="<%= tickets.ticketId %>">
+                            <%= tickets.ticketId %>
+                        </option>
+                        <% } %>
+                </select>
+                <label for="newStatus">New Status:</label>
+                <select name="newStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Solved">Solved</option>
+                    <!-- Add more options if needed -->
+                </select>
+                <textarea name="solution" rows="4" cols="50" placeholder="Add solution"></textarea>
+                <button type="submit">Update Ticket</button>
+            </form>
+        </div>
+
+
+    </div>
+
+    </div>
+
+    <%- include('components/footer', { currentYear: new Date().getFullYear() }) %>

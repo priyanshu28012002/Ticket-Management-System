@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Assign Credentials to new Solver</title>
+  <link rel="icon" type="image/x-icon" href="help.jpg">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -60,6 +62,7 @@
     input[type="submit"]:hover {
       background-color: #0cd32a;
     }
+
     input[type="button"] {
       background-color: #4285F4;
       color: #fff;
@@ -75,32 +78,36 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Assign Credentials to new Solver</h1>
     <form id="solverSignup" action="/solverSignup" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" placeholder="Full Name" required>
-        
-        <label for="email">email:</label>
-        <input type="text" id="email" name="email" placeholder="Choose a email" required>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Full Name" required>
 
-        <label for="categorie">Problem Category:</label>
-        <select class="form-select" name="categorie" required>
-            <option value="" disabled selected>Select a category</option>
-            <option value="one">One</option>
-            <option value="two">Two</option>
-            <option value="three">Three</option>
-        </select>
+      <label for="email">email:</label>
+      <input type="text" id="email" name="email" placeholder="Choose a email" required>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Choose a password" required>
+      <label for="categorie">Problem Category:</label>
+      <select class="form-select" name="categorie" required>
+        <option value="" disabled selected>Select a category</option>
+        <option value="one">One</option>
+        <option value="two">Two</option>
+        <option value="three">Three</option>
+      </select>
 
-        <input type="submit" value="Assign">
-        <% if(error) { %>
-            <p style="color: red"><%= error %></p>
-            <% } %>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" placeholder="Choose a password" required>
+
+      <input type="submit" value="Assign">
+      <% if(error) { %>
+        <p style="color: red">
+          <%= error %>
+        </p>
+        <% } %>
     </form>
   </div>
 </body>
+
 </html>

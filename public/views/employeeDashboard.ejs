@@ -1,0 +1,68 @@
+<%- include('components/clientHeader', { pageTitle: 'employeeDashboard' }) %>
+    <h1>Employee HelpDesk Dashboard</h1>
+    <h2>Name of the Employee is <%= name %></h2>
+    <h2>Employee ID is <%= employeeId%></h2>
+    <h2>Department is <%= department%></h2>
+    <div>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid justify-content-start">
+                <a href="/employeeDashboard" class="btn btn-outline-success me-2" role="button">My Tickets</a>
+                <a href="/departmentDashboard" class="btn btn-sm btn-outline-secondary" role="button">Department Tickets</a>
+            </div>
+        </nav>
+    </div>
+    <div style="width: 100%; display: flex;">
+        
+        <div class="status-section" style="flex: 1; padding: 20px;">
+            <h2>Status of My Previous Tickets</h2>
+            <ul>
+                <% if (previousTickets.length> 0) { %>
+                    <% previousTickets.forEach(ticket=> { %>
+                        <li>
+                            <p>Ticket ID: <%= ticket.ticketId %>
+                            </p>
+
+                            <p>Problem Description: <%= ticket.problemDescription %></p>
+
+                            <p>Department: <%= ticket.department %>
+                            </p>
+                            <p>Status: <%= ticket.status %>
+                            </p>
+                            <p>Solution: <%= ticket.solution || 'Not available' %>
+                            </p>
+                        </li>
+                        <% }); %>
+                            <% } else { %>
+                                <p>No previous tickets.</p>
+                                <% } %>
+            </ul>
+        </div>  
+            
+    <!--                           Generate the ticket 
+     -->
+    <div style="flex: 1; padding: 20px; ">
+            <H2>Generate New Ticket:</H2>
+            <img src="gen.png" alt="Ticket Generation Image" style="max-width: 100%;">
+            <form id="newTicketForm" action="/newTicketForm" method="post">
+                <label for="categories">Related  Department:</label>
+                <select class="form-select" name="department" required>
+                    <option value="" disabled selected>Select a department</option>
+                    <option value="finance">Finance</option>
+                    <option value="information_technology">Information Technology</option>
+                    <option value="human_resources">Human Resources</option>
+                    <option value="sales">Sales</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="purchasing">Purchasing</option>
+                  </select>
+
+                <label for="problemDescription">Problem Description:</label>
+                <textarea class="form-control" name="problemDescription" rows="4" required></textarea>
+
+                <button type="submit" class="submit-button">Submit</button>
+            </form>
+
+        </div>
+        
+    </div>
+
+    <%- include('components/footer', { currentYear: new Date().getFullYear() }) %>
