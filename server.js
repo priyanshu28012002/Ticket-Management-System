@@ -2,21 +2,23 @@ const express = require("express");
 const bodyParser = require('body-parser');
 const session = require("express-session");
 const path = require("path");
+const socketIO = require('socket.io');
 const mongoose = require('mongoose');
 const http = require('http')
-const socket = require('socket.io');
-
 const app = express();
+
 const db = require("./models/db");
 const ClientModel = require("./models/Client");
 const { generateKey } = require("crypto");
 const TicketsModel = require("./models/Tickets");
 const SolverModel = require("./models/Solver");
 const EmployeeModel = require("./models/Employee");
+const MessageModel = require("./models/Message");
 
 // Socket connection 
-const server = http.createServer(app);
-const io = socket(server);
+// const server = http.createServer(app);
+// const io = socketIO(server);
+// console.log(io);
 // Static folder for serving HTML, CSS, JS, and other assets
 app.use(express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs"); // Set EJS as the view engine
@@ -36,6 +38,34 @@ app.use(function (req, res, next) {
 // Parse incoming JSON and URL-encoded data
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const server = http.createServer(app);
+const io = socketIO(server);
+console.log(io);
+
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+
+//     socket.on('join', (room) => {
+//         socket.join(room);
+//         console.log(`User joined room ${room}`);
+//     });
+
+//     socket.on('leave', (room) => {
+//         socket.leave(room);
+//         console.log(`User left room ${room}`);
+//     });
+
+//     socket.on('message', async ({ room, message }) => {
+//         const newMessage = new Message({ room, text: message });
+//         await newMessage.save();
+//         io.to(room).emit('message', { room, message });
+//     });
+
+//     socket.on('disconnect', () => {
+//         console.log('A user disconnected');
+//     });
+// });
 
 app.get("/", function (req, res) {
     res.render("index");
@@ -59,7 +89,7 @@ app.post("/employeeLogin", async function (req, res) {
             // Retrieve additional client data from the database
             const employeeData = await EmployeeModel.findOne({ email });
             if (employeeData) {
-                const { name, employeeId , department } = employeeData;
+                const { name, employeeId, department } = employeeData;
                 req.session.employeeId = employeeId;
                 req.session.name = name;
                 req.session.department = department;
@@ -142,7 +172,7 @@ app.get("/employeeDashboard", async function (req, res) {
             const previousTickets = await TicketsModel.find({ employeeId: req.session.employeeId });
 
             // Render the clientDashboard template and pass the previousTickets data
-            res.render("employeeDashboard", { name, employeeId, previousTickets,department });
+            res.render("employeeDashboard", { name, employeeId, previousTickets, department });
         } catch (err) {
             console.error("Error:", err);
             res.status(500).send("An error occurred");
@@ -160,16 +190,58 @@ app.get("/departmentDashboard", async function (req, res) {
             const department = req.session.department;
             // Fetch the user's previous tickets from the database
             const previousTickets = await TicketsModel.find({ department: req.session.department });
+            const previousChat = await MessageModel.find();
+            // io.on('connection', (socket) => {
+            //     console.log('A user connected');
+
+            //     socket.on('join', (ticketId) => {
+            //         socket.join(ticketId);
+            //         console.log(`User joined room ${ticketId}`);
+            //     });
+
+            //     socket.on('leave', (ticketId) => {
+            //         socket.leave(ticketId);
+            //         console.log(`User left room ${ticketId}`);
+            //     });
+
+            //     socket.on('message', async ({ ticketId, message }) => {
+            //         const currentDate = new Date();
+            //         const newMessage = await MessageModel.create({
+            //             ticketId,
+            //             employeeId,
+            //             name,
+            //             department,
+            //             message,
+            //             createdAt: currentDate // Store the current date and time
+            //         });
+        
+            //         await newMessage.save();
+            //         // const newMessage = new Message({ room, text: message });
+            //         // await newMessage.save();
+            //        // saveMessage(ticketId, message);
+            //        console.log(ticketId, message)
+            //         io.to(ticketId).emit('message', { ticketId, message });
+            //     });
+
+            //     socket.on('disconnect', () => {
+            //         console.log('A user disconnected');
+            //     });
+            // });
+            // const employeeId = req.session.employeeId;
+            // const name = req.session.name;
+            // const department = req.session.department;
+            // // Fetch the user's previous tickets from the database
+            // const previousTickets = await TicketsModel.find({ department: req.session.department });
 
             // Render the clientDashboard template and pass the previousTickets data
-            res.render("departmentDashboard", { name, employeeId, previousTickets,department });
+            console.log(previousChat)
+            res.render("departmentDashboard", { name, employeeId, previousTickets, department ,previousChat});
         } catch (err) {
             console.error("Error:", err);
             res.status(500).send("An error occurred");
         }
     }
 });
-
 
 app.post("/newTicketForm", async function (req, res) {
     if (!req.session.isLoggedIn) {
@@ -183,9 +255,27 @@ app.post("/newTicketForm", async function (req, res) {
             const { department, problemDescription } = req.body;
             const status = "Pending";
             const solution = "";
+
+            // Get the current date and time
+            const currentDate = new Date();
+
             console.log(ticketId, employeeId, name, email, department, problemDescription, status, solution)
-            const newTicket = await TicketsModel.create({ ticketId, employeeId, name, email, department, problemDescription, status, solution });
+
+            // Create a new ticket with the current date and time
+            const newTicket = await TicketsModel.create({
+                ticketId,
+                employeeId,
+                name,
+                email,
+                department,
+                problemDescription,
+                status,
+                solution,
+                createdAt: currentDate // Store the current date and time
+            });
+
             await newTicket.save();
+
             // Set the newTicketSubmitted flag in the session
             req.session.newTicketSubmitted = true;
             res.redirect("/employeeDashboard");
@@ -195,7 +285,34 @@ app.post("/newTicketForm", async function (req, res) {
             res.status(500).send("An error occurred");
         }
     }
-})
+});
+
+
+// app.post("/newTicketForm", async function (req, res) {
+//     if (!req.session.isLoggedIn) {
+//         res.redirect("/employeeLogin");
+//     } else {
+//         try {
+//             const ticketId = generateTicketId();
+//             const employeeId = req.session.employeeId;
+//             const name = req.session.name;
+//             const email = req.session.email;
+//             const { department, problemDescription } = req.body;
+//             const status = "Pending";
+//             const solution = "";
+//             console.log(ticketId, employeeId, name, email, department, problemDescription, status, solution)
+//             const newTicket = await TicketsModel.create({ ticketId, employeeId, name, email, department, problemDescription, status, solution });
+//             await newTicket.save();
+//             // Set the newTicketSubmitted flag in the session
+//             req.session.newTicketSubmitted = true;
+//             res.redirect("/employeeDashboard");
+//         }
+//         catch (err) {
+//             console.error("Error:", err);
+//             res.status(500).send("An error occurred");
+//         }
+//     }
+// })
 
 // app.get("/solverSignup", function (req, res) {
 //     res.render("solverSignup", { error: null });
@@ -437,6 +554,29 @@ app.get("/admin", async function (req, res) {
 //     });
 // });
 
+// app.js
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+
+//     // Handle chat events
+//     socket.on('chat message', (msg) => {
+//         // Broadcast the message to clients in the same department
+//         const userDepartment = getUserDepartment(); // Implement your logic to get the user's department
+//         socket.to(userDepartment).emit('chat message', msg);
+//     });
+
+//     // Join user to department room
+//     socket.on('join department', (department) => {
+//         socket.join(department);
+//     });
+
+//     // Handle disconnect
+//     socket.on('disconnect', () => {
+//         console.log('A user disconnected');
+//     });
+// });
+
+
 // app.post("/chat", (req, res) => {
 //     const { ticketId, message } = req.body;
 
@@ -446,6 +586,116 @@ app.get("/admin", async function (req, res) {
 //     // Respond with a success status
 //     res.sendStatus(404);
 // });
+console.log("hipchat");
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+
+//     socket.on('join', (room) => {
+//         socket.join(room);
+//         console.log(`User joined room ${room}`);
+//     });
+
+//     socket.on('leave', (room) => {
+//         socket.leave(room);
+//         console.log(`User left room ${room}`);
+//     });
+
+//     socket.on('message', async ({ room, message }) => {
+//         const newMessage = new Message({ room, text: message });
+//         await newMessage.save();
+//         io.to(room).emit('message', { room, message });
+//     });
+
+//     socket.on('disconnect', () => {
+//         console.log('A user disconnected');
+//     });
+// });
+
+//  io.on('connection', (socket) => {
+//                 console.log('A user connected');
+
+//                 socket.on('join', (ticketId) => {
+//                     socket.join(ticketId);
+//                     console.log(`User joined room ${ticketId}`);
+//                 });
+
+//                 socket.on('leave', (ticketId) => {
+//                     socket.leave(ticketId);
+//                     console.log(`User left room ${ticketId}`);
+//                 });
+
+//                 socket.on('message', async ({ ticketId, message }) => {
+//                     const currentDate = new Date();
+//                     const newMessage = await MessageModel.create({
+//                         ticketId,
+//                         employeeId,
+//                         name,
+//                         department,
+//                         message,
+//                         createdAt: currentDate // Store the current date and time
+//                     });
+        
+//                     await newMessage.save();
+//                     // const newMessage = new Message({ room, text: message });
+//                     // await newMessage.save();
+//                    // saveMessage(ticketId, message);
+//                    console.log(ticketId, message)
+//                     io.to(ticketId).emit('message', { ticketId, message });
+//                 });
+
+//                 socket.on('disconnect', () => {
+//                     console.log('A user disconnected');
+//                 });
+//             });
+
+// Function to set up Socket.IO connections
+function setupSocketIO(socket) {
+    socket.on('join', (ticketId) => {
+        socket.join(ticketId);
+        console.log(`User joined room ${ticketId}`);
+    });
+
+    socket.on('leave', (ticketId) => {
+        socket.leave(ticketId);
+        console.log(`User left room ${ticketId}`);
+    });
+
+    socket.on('message', async ({ ticketId, message }) => {
+        const currentDate = new Date();
+        
+        const newMessage = await MessageModel.create({
+            ticketId,
+           // employeeId,
+            //name,
+           // department,
+            message,
+            createdAt: currentDate // Store the current date and time
+        });
+
+        await newMessage.save();
+        console.log(ticketId, message);
+        io.to(ticketId).emit('message', { ticketId, message });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+}
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    // Check if the user is logged in
+    // if (!socket.request.session.isLoggedIn) {
+    //     console.log('User not logged in');
+    //     socket.disconnect();
+    //     return;
+    // }
+
+    setupSocketIO(socket);
+});
+
+
 
 //Logout route to clear session and redirect to login page
 app.get("/logout", function (req, res) {
@@ -457,11 +707,23 @@ app.get("/logout", function (req, res) {
     });
 });
 
+app.get('/getPreviousChat', async (req, res) => {
+    const selectedTicketId = req.query.ticketId;
+
+    try {
+        const previousChat = await MessageModel.find({ ticketId: selectedTicketId });
+        res.json(previousChat);
+    } catch (error) {
+        console.error('Error fetching previous chat:', error);
+        res.status(500).json({ error: 'An error occurred while fetching previous chat.' });
+    }
+});
+
 db.init()
     .then(function () {
         console.log("Database connected");
 
-        app.listen(3000, function () {
+        server.listen(3000, function () {
             console.log("Server is running on port 3000");
         });
     })
@@ -473,15 +735,15 @@ db.init()
 //     Helper Function 
 
 
-// function generateClientId(name) {
-//     const randomNumber = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
-//     return `@${name}${randomNumber}`;
-// }
+function generateClientId(name) {
+    const randomNumber = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+    return `@${name}${randomNumber}`;
+}
 
-// function generateSolverId(name) {
-//     const randomNumber = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
-//     return `@${name}${randomNumber}`;
-// }
+function generateSolverId(name) {
+    const randomNumber = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+    return `@${name}${randomNumber}`;
+}
 
 function generateTicketId() {
     const randomNumber = Math.floor(Math.random() * (99999999999999 - 10000000000000 + 1)) + 10000000000000;
@@ -495,3 +757,35 @@ function generateemployeeId() {
     return randomNumber;
 }
 
+
+
+async function saveMessage(ticketId, message) {
+    if (!req.session.isLoggedIn) {
+        res.redirect("/employeeLogin");
+    } else {
+        try {
+            const employeeId = req.session.employeeId;
+            const name = req.session.name;
+            const department = req.session.department;
+            const currentDate = new Date();
+
+            console.log(ticketId, employeeId, name, department, message, currentDate)
+
+            // Create a new ticket with the current date and time
+            const newMessage = await MessageModel.create({
+                ticketId,
+                employeeId,
+                name,
+                department,
+                message,
+                createdAt: currentDate // Store the current date and time
+            });
+
+            await newMessage.save();
+
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+}

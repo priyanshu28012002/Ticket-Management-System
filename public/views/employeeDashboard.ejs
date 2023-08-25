@@ -1,24 +1,25 @@
 <%- include('components/clientHeader', { pageTitle: 'employeeDashboard' }) %>
-    <h1>Employee HelpDesk Dashboard</h1>
-    <h2>Name of the Employee is <%= name %></h2>
-    <h2>Employee ID is <%= employeeId%></h2>
-    <h2>Department is <%= department%></h2>
-    <div>
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid justify-content-start">
-                <a href="/employeeDashboard" class="btn btn-outline-success me-2" role="button">My Tickets</a>
-                <a href="/departmentDashboard" class="btn btn-sm btn-outline-secondary" role="button">Department Tickets</a>
-            </div>
-        </nav>
-    </div>
+    
     <div style="width: 100%; display: flex;">
         
         <div class="status-section" style="flex: 1; padding: 20px;">
+            <div class="info">
+                <h1>Department HelpDesk Dashboard</h1>
+                <h2>Name of the Employee is: <%= name %>
+                </h2>
+                <h2>Employee ID is: <%= employeeId%>
+                </h2>
+                <h2>Department is: <%= department%>
+                </h2>
+            </div>
             <h2>Status of My Previous Tickets</h2>
+           
             <ul>
                 <% if (previousTickets.length> 0) { %>
                     <% previousTickets.forEach(ticket=> { %>
                         <li>
+                            <p>Created On: <%= ticket.createdAt.toISOString().split('T')[0] %></p> <!-- Display created date -->
+                            <p>Created At: <%= ticket.createdAt.toISOString().split('T')[1].substr(0, 8) %></p> <!-- Display created time -->
                             <p>Ticket ID: <%= ticket.ticketId %>
                             </p>
 

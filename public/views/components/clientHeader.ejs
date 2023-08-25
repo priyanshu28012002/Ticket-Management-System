@@ -10,8 +10,35 @@
 
     <title>Sahāyakam Help Desk</title>
     <link rel="icon" type="image/x-icon" href="help.jpg">
-    <!-- <link rel="stylesheet" href="styles.css"> -->
-  </head>
+   
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <style>
+        /* Style for the entire page */
+        /* Style for the info div */
+        .info {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Style for the h1 element */
+        .info h1 {
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        /* Style for the h2 elements */
+        .info h2 {
+            color: #073ce8;
+            margin: 10px 0;
+        }
+        .logout {
+        color: red;
+    }
+    </style>
+</head>
 <body>
     <header>
         <!-- <nav class="navbar1 navbar-light bg-light">
@@ -59,8 +86,12 @@
                     <img src="help.jpg" alt="loading" width="30" height="24" class="d-inline-block align-text-top">
                     Sahāyakam
                 </a>
-                <a href="/logout" class="logout-button">Logout</a>
-                    
+                <a href="/employeeDashboard" class="btn btn-outline-success me-2" role="button">My Tickets</a>
+                <a href="/departmentDashboard" class="btn btn-sm btn-outline-secondary" role="button">Department Tickets</a>
+                <b>Name: <%= name %>
+                    Employee ID: <%= employeeId%>
+                    Department: <%= department%></b>
+                <a href="/logout" class="logout btn btn-outline-danger" role="button">Logout</a>
                 
             </div>
         </nav>        
