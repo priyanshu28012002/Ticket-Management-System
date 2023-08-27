@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* Adjust the initial position */
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease;
+}
+
+.chat-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.toggle-button {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.chat-content {
+    display: none;
+    padding: 10px;
+}
+
+.expanded {
+    right: 20px; /* Position after expanding */
+}
+
+.chat-content.expanded {
+    display: block;
+}
+
+.toggle-button {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.toggle-button i {
+    margin-right: 8px; /* Add some spacing between the icon and text */
+}

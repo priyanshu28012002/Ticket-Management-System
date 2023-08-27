@@ -1,51 +1,57 @@
 <%- include('components/clientHeader', { pageTitle: 'employeeDashboard' }) %>
-    
+
     <div style="width: 100%; display: flex;">
-        
+
         <div class="status-section" style="flex: 1; padding: 20px;">
             <div class="info">
-                <h1>Department HelpDesk Dashboard</h1>
-                <h2>Name of the Employee is: <%= name %>
+                <h1>Employee HelpDesk Dashboard</h1>
+                <h2 id="employeeName">Name: <%= name %>
                 </h2>
                 <h2>Employee ID is: <%= employeeId%>
                 </h2>
                 <h2>Department is: <%= department%>
                 </h2>
             </div>
-            <h2>Status of My Previous Tickets</h2>
-           
-            <ul>
-                <% if (previousTickets.length> 0) { %>
-                    <% previousTickets.forEach(ticket=> { %>
-                        <li>
-                            <p>Created On: <%= ticket.createdAt.toISOString().split('T')[0] %></p> <!-- Display created date -->
-                            <p>Created At: <%= ticket.createdAt.toISOString().split('T')[1].substr(0, 8) %></p> <!-- Display created time -->
-                            <p>Ticket ID: <%= ticket.ticketId %>
-                            </p>
+            <div>
+                <h2>Status of My Previous Tickets</h2>
 
-                            <p>Problem Description: <%= ticket.problemDescription %></p>
+                <ul>
+                    <% if (previousTickets.length> 0) { %>
+                        <% previousTickets.forEach(ticket=> { %>
+                            <li>
+                                <p>Created On: <%= ticket.createdAt.toISOString().split('T')[0] %>
+                                </p> <!-- Display created date -->
+                                <p>Created At: <%= ticket.createdAt.toISOString().split('T')[1].substr(0, 8) %>
+                                </p> <!-- Display created time -->
+                                <p>Ticket ID: <%= ticket.ticketId %>
+                                </p>
 
-                            <p>Department: <%= ticket.department %>
-                            </p>
-                            <p>Status: <%= ticket.status %>
-                            </p>
-                            <p>Solution: <%= ticket.solution || 'Not available' %>
-                            </p>
-                        </li>
-                        <% }); %>
-                            <% } else { %>
-                                <p>No previous tickets.</p>
-                                <% } %>
-            </ul>
-        </div>  
-            
-    <!--                           Generate the ticket 
+                                <p>Problem Description: <%= ticket.problemDescription %>
+                                </p>
+
+                                <p>Department: <%= ticket.department %>
+                                </p>
+                                <p>Status: <%= ticket.status %>
+                                </p>
+                                <p>Solution: <%= ticket.solution || 'Not available' %>
+                                </p>
+                            </li>
+                            <% }); %>
+                                <% } else { %>
+                                    <p>No previous tickets.</p>
+                                    <% } %>
+                </ul>
+            </div>
+        </div>
+        <!-- Chat  -->
+
+        <!--                           Generate the ticket 
      -->
-    <div style="flex: 1; padding: 20px; ">
+        <div style="flex: 1; padding: 20px; ">
             <H2>Generate New Ticket:</H2>
             <img src="gen.png" alt="Ticket Generation Image" style="max-width: 100%;">
             <form id="newTicketForm" action="/newTicketForm" method="post">
-                <label for="categories">Related  Department:</label>
+                <label for="categories">Related Department:</label>
                 <select class="form-select" name="department" required>
                     <option value="" disabled selected>Select a department</option>
                     <option value="finance">Finance</option>
@@ -54,7 +60,7 @@
                     <option value="sales">Sales</option>
                     <option value="engineering">Engineering</option>
                     <option value="purchasing">Purchasing</option>
-                  </select>
+                </select>
 
                 <label for="problemDescription">Problem Description:</label>
                 <textarea class="form-control" name="problemDescription" rows="4" required></textarea>
@@ -63,7 +69,137 @@
             </form>
 
         </div>
+
+    </div>
+    <div class="chat-widget">
+        <div class="toggle-button">
+            <div class="chat-header">
+                <div class="toggle-button">
+                    <i class="fas fa-comment"></i> <img src="help.jpg" alt="Chat Icon" class="chat-icon">
+                    Chat
+                </div>
+            </div>
+            <!-- Replace with your image path -->
+        </div>
+        <div class="chat-content">
+
+            <!-- Chat messages and input field go here -->
+            <div class="chat-section">
+
+                <!-- <h2>Chat</h2> -->
+                <label for="tICKETid">TICKET Id</label>
+                <select class="form-select" id="ticketSelect" required>
+                    <option value="" selected>Select a TICKET Id</option>
+
+                    <% for (const tickets of previousTickets) { %>
+                        <option value="<%= tickets.ticketId %>">
+                            <%= tickets.ticketId %>
+                        </option>
+                        <% } %>
+                </select>
+                <div id="previousChatMessages">
+                    <!-- Display previous chat messages -->
+
+                </div>
+                <!-- <div id="chatMessages"></div>
         
+
+<input type="text" id="messageInput">
+<button id="sendButton">Send</button> -->
+            </div>
+
+
+        </div>
     </div>
 
     <%- include('components/footer', { currentYear: new Date().getFullYear() }) %>
+
+        <script>
+            // const socket = io();
+
+            const ticketSelect = document.getElementById('ticketSelect');
+            // const chatMessages = document.getElementById('chatMessages');
+            // const messageInput = document.getElementById('messageInput');
+            // const sendButton = document.getElementById('sendButton');
+            const employeeName = document.getElementById('employeeName');
+            const employeeNameText = employeeName.textContent;
+            const employeeNameParts = employeeNameText.split(': ');
+            const employeeNameIs = employeeNameParts[1].trim();
+
+            // let currentTicketId = '';
+
+            ticketSelect.addEventListener('change', (event) => {
+                const selectedTicketId = event.target.value;
+                // connectToTicket(selectedTicketId);
+            });
+
+            // sendButton.addEventListener('click', sendMessage);
+
+            // socket.on('message', ({ ticketId,employeeNameIs, message }) => {
+            //     if (ticketId === currentTicketId) {
+            //         const messageElement = document.createElement('div');
+            //         messageElement.textContent =employeeNameIs+":-"+message;
+            //         chatMessages.appendChild(messageElement);
+            //     }
+            // });
+
+            // function connectToTicket(ticketId) {
+            //     if (currentTicketId) {
+            //         socket.emit('leave', currentTicketId);
+            //     }
+            //     currentTicketId = ticketId;
+            //     socket.emit('join', ticketId);
+            //     chatMessages.innerHTML = ''; // Clear previous messages
+            // }
+
+            // function sendMessage() {
+            //     const message = messageInput.value;
+            //     if (message.trim() !== '') {
+            //         console.log(employeeNameIs)
+            //         socket.emit('message', { ticketId: currentTicketId,employeeNameIs, message });
+            //         messageInput.value = '';
+            //     }
+            // }
+
+            ticketSelect.addEventListener('change', async (event) => {
+                const selectedTicketIdChat = event.target.value;
+                const previousChatMessages = document.getElementById('previousChatMessages');
+
+                // Send an AJAX request to the server
+                try {
+                    const response = await fetch(`/getPreviousChat?ticketId=${selectedTicketIdChat}`);
+                    const previousChat = await response.json();
+
+                    // Clear previous messages
+                    previousChatMessages.innerHTML = '';
+
+                    // Display each chat message
+                    previousChat.forEach(message => {
+                        const messageElement = document.createElement('div');
+                        messageElement.textContent = message.sender + ":-" + message.message //message.message; // Adjust this based on your schema
+                        previousChatMessages.appendChild(messageElement);
+                    });
+
+                    console.log(previousChat);
+                } catch (error) {
+                    console.error('Error fetching previous chat:', error);
+                }
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                const chatWidget = document.querySelector('.chat-widget');
+                const chatHeader = document.querySelector('.chat-header');
+                const chatContent = document.querySelector('.chat-content');
+
+                chatHeader.addEventListener('click', function () {
+                    chatWidget.classList.toggle('expanded');
+                    chatContent.classList.toggle('expanded');
+                });
+            });
+        </script>
+        <script>
+
+        </script>
+        </body>
+
+        </html>
+
